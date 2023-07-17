@@ -11,16 +11,10 @@
 #include "freertos/semphr.h"
 #include "esp_system.h"
 #include <esp_log.h>
-#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 4, 0)
 #include "esp_chip_info.h"
 #include "esp_timer.h"
-#endif
-#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
 #include "spi_flash_mmap.h"
 #include "esp_flash.h"
-#else
-#include "esp_spi_flash.h"
-#endif
 
 #include "i2c_manager.h"
 #include "m5core2_axp192.h"
@@ -164,17 +158,11 @@ void app_main(void)
 
 	printf("silicon revision %d, ", chip_info.revision);
 
-#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
 	uint32_t size_flash_chip;
 	esp_flash_get_size(NULL, &size_flash_chip);
 	printf("%luMB %s flash\n", size_flash_chip / (1024 * 1024),
 			(chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 	printf("Free heap: %lu\n", esp_get_free_heap_size());
-#else
-	printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024),
-			(chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
-	printf("Free heap: %d\n", esp_get_free_heap_size());
-#endif
 	
 	m5core2_init();
 
